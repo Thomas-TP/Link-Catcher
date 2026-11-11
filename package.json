@@ -9,7 +9,8 @@
     "test": "node tests/e2e.js",
     "build": "node scripts/build.js",
     "assets": "node scripts/store-assets.js",
-    "video": "node scripts/video.js"
+    "video": "node scripts/video.js",
+    "check:listing": "node scripts/check-listing.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

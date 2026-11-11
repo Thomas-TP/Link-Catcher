@@ -8,40 +8,39 @@ Link Catcher
 ## Description courte (manifeste ; ≤ 132 caractères — 122)
 Gib ein Schlüsselwort in die Suchleiste ein und springe direkt zu deinem gespeicherten Link. Privat, lokal, ohne Tracking.
 
-## Description détaillée (1887 caractères)
-Link Catcher macht aus deiner Suchleiste einen Launcher für die Seiten, die du jeden Tag besuchst.
+## Description détaillée (1660 caractères)
+Link Catcher ist ein schneller, privater Starter für die Seiten, die du jeden Tag öffnest.
 
-Speichere ein Schlüsselwort und eine URL (zum Beispiel „gh“ → github.com). Gib dieses Wort dann in Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, Startpage, Qwant oder Kagi ein — oder „l“ + Leertaste + Wort in der Adressleiste — und du landest direkt auf deiner Seite, noch bevor die Ergebnisse geladen sind.
+Verbinde ein kurzes Wort mit einer Webadresse, zum Beispiel „gh“ für dein Code-Repository. Beim nächsten Mal gibst du dieses Wort in deine Suchleiste ein oder in die Adressleiste nach einem „l“ und einem Leerzeichen: Du landest sofort auf deiner Seite, noch bevor Ergebnisse erscheinen.
 
-FUNKTIONEN
-• Sofortige Weiterleitung bei exaktem Schlüsselwort (ohne Unterscheidung von Groß-/Kleinschreibung und Akzenten)
-• Adressleiste (Omnibox) mit Live-Vorschlägen: „l“, Leertaste, dann ein paar Buchstaben
-• Alias: Schreibe „docs, d“, um zwei Schlüsselwörter für denselben Link anzulegen
-• Suche, Sortierung (A-Z / Z-A), Listen- oder Gitteransicht, manuelle Reihenfolge per Drag & Drop
-• JSON-Import / -Export mit Konfliktbehandlung (eigene behalten oder ersetzen)
-• Helles und dunkles Design; English, Français, Español, Deutsch
-• Tastenkürzel Alt+Umschalt+L zum Öffnen der Verwaltung
-• Suchmaschine für unbekannte Schlüsselwörter frei wählbar
-• Lokaler Nutzungszähler pro Link (wird nie synchronisiert)
+WAS DU TUN KANNST
+• Eine gespeicherte Seite mit genau einem Wort öffnen, egal ob groß oder klein geschrieben, mit oder ohne Akzente
+• Während des Tippens Live-Vorschläge in der Adressleiste erhalten
+• Einer Seite mit einem Schritt mehrere Namen geben, etwa „docs, d“
+• Deine Liste finden, sortieren und neu ordnen, als Liste oder als Gitter
+• Alles als JSON-Datei sichern und wiederherstellen, mit Auswahl bei doppelten Namen
+• Ein helles oder dunkles Design und eine von vier Oberflächensprachen wählen
+• Die Verwaltung mit Alt+Umschalt+L öffnen
+• Festlegen, wo unbekannte Wörter nachgeschlagen werden
 
-PRIVATSPHÄRE ZUERST
-Kein Konto, keine Analyse, kein Tracking, kein Remote-Code, keine externen Schriften oder Ressourcen. Deine Links bleiben in deinem Browser (nur mit aktivierter Browser-Synchronisierung werden sie vom Browser selbst synchronisiert). Die Erweiterung braucht nur zwei Berechtigungen: „storage“ zum Speichern deiner Links und „webNavigation“, um lokal eine Suche in einer unterstützten Suchmaschine zu erkennen. Auf den Inhalt deiner Seiten greift sie nicht zu.
+PRIVAT ENTWORFEN
+Kein Konto, keine Analyse, kein Tracking und kein Remote-Code. Alles bleibt in deinem Browser und wird nur dann vom Browser selbst synchronisiert, wenn du die Synchronisierung aktiviert hast. Link Catcher braucht nur zwei Berechtigungen: „storage“, um deine Liste zu speichern, und „webNavigation“, um eine Websuche lokal zu erkennen und dich weiterzuleiten. Der Inhalt der besuchten Seiten wird nie gelesen.
 
-SO FUNKTIONIERT ES
-1. Klicke auf das Link-Catcher-Symbol (oder Alt+Umschalt+L) und öffne den Tab „Neu“.
-2. Gib ein Schlüsselwort (z. B. gh) und eine URL (z. B. github.com) ein.
-3. Suche genau nach diesem Wort in deiner Suchmaschine oder tippe l + Leertaste + Wort in die Adressleiste.
+SO FÄNGST DU AN
+1. Klicke auf das Link-Catcher-Symbol und öffne den Tab „Neu“.
+2. Gib einen Kurznamen (zum Beispiel gh) und eine Adresse (zum Beispiel github.com) ein.
+3. Suche genau nach diesem Wort oder tippe l + Leertaste + das Wort in die Adressleiste.
 
 ## Termes de recherche (Edge : ≤ 7 termes, 30 car. chacun, 21 mots au total)
 Verknüpfungen, Lesezeichen, Schlüsselwörter, Schnellzugriff, Omnibox, Launcher, Weiterleitung
 
 ## Vidéo YouTube (à téléverser, puis coller l'URL dans la langue correspondante)
-**Titre :** Link Catcher — mit einem Wort zu deinen Links (Chrome & Edge)
+**Titre :** Link Catcher — deine Seiten ein Wort entfernt
 
 **Description :**
-Link Catcher macht aus deiner Suchleiste einen Launcher: Gib ein Schlüsselwort in Google, Bing, DuckDuckGo … ein (oder l + Leertaste + Wort in der Adressleiste) und lande direkt bei deinem gespeicherten Link.
+Link Catcher ist ein schneller, privater Starter: Tippe ein kurzes Wort in deine Suchleiste oder Adressleiste und lande direkt auf deiner gespeicherten Seite.
 
-Kostenlos, privat, ohne Konto, ohne Tracking.
+Kostenlos, ohne Konto, ohne Tracking.
 Quellcode und Datenschutzerklärung: https://github.com/Thomas-TP/Link-Catcher
 
 **Étiquettes :** link catcher, browser erweiterung, chrome erweiterung, edge erweiterung, lesezeichen, omnibox, produktivität
