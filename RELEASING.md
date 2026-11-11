@@ -3,7 +3,7 @@
 1. Mettre à jour `version` dans `manifest.json` et `package.json`.
 2. `npm run lint && npm test` (nécessite Chromium ; `CHROMIUM_PATH=...` pour un binaire précis).
 3. `npm run build` → `dist/link-catcher-<version>.zip` (uniquement les fichiers de l'extension).
-4. `git tag vX.Y.Z && git push --tags` → la release GitHub est créée avec le zip.
+4. `git tag vX.Y.Z && git push --tags` → la release GitHub est créée avec le zip. Sans accès au push de tags : Actions → *Release* → *Run workflow* avec `release_tag` = `vX.Y.Z`.
 5. Déposer le zip :
    - **Edge** : Partner Center → extension → Packages → uploader le zip → Publish (voir `STORE_LISTING.md`).
    - **Chrome** : Chrome Web Store Developer Dashboard → Package → Upload new package.
