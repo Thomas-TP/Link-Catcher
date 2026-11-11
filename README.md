@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" alt="Link Catcher Logo" width="128" />
+  <img src="icons/icon128.png" alt="Link Catcher Logo" width="128" />
   <h1>Link Catcher</h1>
   <p>Vos liens instantanés à portée de clavier. Naviguez à la vitesse de la lumière !</p>
 </div>
@@ -12,40 +12,48 @@ Dites adieu aux favoris interminables pour vos sites du quotidien !
 
 ## ✨ Fonctionnalités
 
-- ⚡ **Redirection Instantanée** : Interception transparente des recherches et compatibilité Omnibox (Tapez `l` + `Espace`).
-- 🎨 **Interface Premium** : Design "Glassmorphism" robuste, superbes animations et listes personnalisées.
-- 🗂️ **Organisation Drag & Drop** : Triez vos raccourcis manuellement avec un comportement fluide "façon smartphone".
-- 🌗 **Thèmes Clair / Sombre** : Moteur de thème dynamique.
-- 🌐 **Multilingue** : 100% localisé en Français, Anglais, Espagnol et Allemand.
-- 💾 **Sauvegarde Portative** : Exportez et testez l'importation de vos listes via Drag & Drop au format JSON.
-- 🔒 **Privacy First** : Fonctionne entièrement en local. Aucune donnée personnelle récoltée ni envoyée.
+- ⚡ **Redirection instantanée** sur un mot exact (insensible à la casse et aux accents) depuis Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, Startpage, Qwant et Kagi.
+- 🔎 **Omnibox** : tapez `l` + `Espace` + mot-clé, avec suggestions en direct. Le moteur utilisé pour un mot inconnu est configurable.
+- 🏷️ **Alias** : `docs, d` crée deux mots-clés vers le même lien.
+- 🔍 **Recherche, tri A-Z / Z-A, vue liste ou grille**, ordre manuel par glisser-déposer, compteur d'utilisation local.
+- 💾 **Import / export JSON** avec gestion des conflits.
+- 🌗 **Thèmes clair / sombre** et 🌐 **4 langues** (FR, EN, ES, DE).
+- ⌨️ **Raccourci clavier** `Alt+Maj+L` pour ouvrir le gestionnaire, interface accessible au clavier.
+- 🔒 **Privacy first** : aucune donnée collectée ni envoyée, aucune ressource externe, aucune permission d'hôte. Voir [PRIVACY.md](PRIVACY.md).
 
 ## 🚀 Installation
 
-### Depuis le Chrome Web Store
-*(Lien officiel à venir très prochainement)*
+### Depuis les stores
+- **Chrome Web Store** : disponible.
+- **Microsoft Edge Add-ons** : publication en cours (voir [STORE_LISTING.md](STORE_LISTING.md)).
 
-### Installation Locale (Mode Développeur)
+### Installation locale (mode développeur)
 1. Clonez ce dépôt ou téléchargez-le au format ZIP.
-2. Ouvrez Google Chrome et allez sur `chrome://extensions/`.
-3. Cochez la case **Mode développeur** en haut à droite.
-4. Cliquez sur le bouton **Charger l'extension non empaquetée** et sélectionnez ce dossier (celui contenant `manifest.json`).
-5. L'extension est prête à être utilisée !
+2. Ouvrez `chrome://extensions/` (Chrome) ou `edge://extensions/` (Edge) et activez le **Mode développeur**.
+3. Cliquez sur **Charger l'extension non empaquetée** et sélectionnez ce dossier (celui contenant `manifest.json`).
 
 ## 🛠️ Comment l'utiliser ?
 
-1. Cliquez sur l'icône Link Catcher dans la barre d'outils Chrome.
-2. Allez dans l'onglet **Nouveau**.
-3. Renseignez un mot-clé précis (ex: `git`).
-4. Spécifiez l'URL de votre choix (ex: `https://github.com/`).
-5. Ouvrez un nouvel onglet, tapez `git` dans Google, appuyez sur Entrée, vous êtes téléporté !
+1. Cliquez sur l'icône Link Catcher (ou `Alt+Maj+L`).
+2. Onglet **Nouveau** : saisissez un mot-clé (ex : `git`) et une URL (ex : `github.com`).
+3. Dans Google, Bing, etc., recherchez exactement `git` : vous êtes redirigé. Ou tapez `l`, `Espace`, `git` dans la barre d'adresse.
 
 ## ⚙️ Technologies
 
-- **Manifest V3**
-- Vanilla JavaScript, HTML5 & CSS3 (Aucune bibliothèque tierce, 100% natif pour une performance maximale).
-- API `chrome.storage.sync` pour la synchronisation entre profils Chrome.
-- API `chrome.webNavigation` pour l'interception hyper-rapide.
+- **Manifest V3**, JavaScript / HTML / CSS natifs : **aucune dépendance** dans l'extension.
+- Permissions : `storage` (raccourcis, un par clé `storage.sync`) et `webNavigation` (détection d'une recherche, filtrée sur les moteurs supportés).
+
+## 👩‍💻 Développement
+
+```bash
+npm install          # outils de dev uniquement (ESLint, Playwright)
+npm run lint
+npm test             # charge l'extension dans Chromium (CHROMIUM_PATH=... si besoin)
+npm run build        # dist/link-catcher-<version>.zip
+node scripts/screenshots.js   # visuels des stores
+```
+
+Publication : voir [RELEASING.md](RELEASING.md). Pistes d'évolution : [IMPROVEMENTS.md](IMPROVEMENTS.md).
 
 ## 🤝 Contribution
 

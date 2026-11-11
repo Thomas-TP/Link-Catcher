@@ -1,465 +1,495 @@
-// popup.js
-
-// --- i18n Dictionaries ---
-const i18nData = {
-  fr: {
-    header_subtitle: "Vos liens instantanés", tab_shortcuts: "Mes raccourcis", tab_add: "Nouveau", tab_data: "Données",
-    form_new: "Nouveau Raccourci", form_edit: "Modifier Raccourci", placeholder_keyword: "Mot précis (ex: proj)", placeholder_url: "URL associée (https://...)",
-    btn_cancel: "Annuler", btn_add: "Ajouter", btn_update: "Mettre à jour", btn_export: "Exporter", btn_import: "Importer JSON", btn_wipe: "Supprimer tout",
-    data_title: "Import / Export", data_desc: "Sauvegardez vos liens ou restaurez-les depuis un fichier JSON.",
-    settings_title: "Paramètres", settings_theme: "Thème", settings_lang: "Langue", theme_dark: "Sombre", theme_light: "Clair", settings_tooltip: "Paramètres",
-    empty_state: "Aucun lien enregistré.<br>Allez dans \"Nouveau\" pour commencer !",
-    toast_import_success: "Importation réussie !", toast_import_error: "Format JSON invalide.", toast_copy: "Texte copié", toast_wipe: "Toutes les données ont été effacées.", toast_delete: "Raccourci supprimé.", toast_add: "Raccourci sauvegardé.",
-    btn_edit_tooltip: "Modifier", btn_del_tooltip: "Supprimer", view_list: "Vue Liste", view_grid: "Vue Grille", sort_asc: "A-Z", sort_desc: "Z-A",
-    confirm_del_title: "Supprimer ?", confirm_del_msg: "Voulez-vous supprimer ce raccourci ?", btn_yes: "Supprimer", btn_no: "Annuler",
-    confirm_wipe_title: "Effacer les données ?", confirm_wipe_msg: "Cette action est irréversible. Voulez-vous sauvegarder avant de supprimer ?", btn_wipe_backup: "Sauvegarder & Supprimer", btn_wipe_direct: "Supprimer définitivement"
-  },
-  en: {
-    header_subtitle: "Your instant shortcuts", tab_shortcuts: "Shortcuts", tab_add: "Add New", tab_data: "Data",
-    form_new: "New Shortcut", form_edit: "Edit Shortcut", placeholder_keyword: "Exact keyword (e.g. proj)", placeholder_url: "Target URL (https://...)",
-    btn_cancel: "Cancel", btn_add: "Add Shortcut", btn_update: "Update", btn_export: "Export JSON", btn_import: "Import JSON", btn_wipe: "Clear all data",
-    data_title: "Import / Export", data_desc: "Save your links or restore them from a JSON backup.",
-    settings_title: "Settings", settings_theme: "Theme", settings_lang: "Language", theme_dark: "Dark", theme_light: "Light", settings_tooltip: "Settings",
-    empty_state: "No shortcuts saved yet.<br>Go to \"Add New\" to create one!",
-    toast_import_success: "Successfully imported!", toast_import_error: "Invalid JSON format.", toast_copy: "Copied!", toast_wipe: "All data cleared.", toast_delete: "Shortcut deleted.", toast_add: "Shortcut saved.",
-    btn_edit_tooltip: "Edit", btn_del_tooltip: "Delete", view_list: "List View", view_grid: "Grid View", sort_asc: "A-Z", sort_desc: "Z-A",
-    confirm_del_title: "Delete?", confirm_del_msg: "Are you sure you want to delete this shortcut?", btn_yes: "Delete", btn_no: "Cancel",
-    confirm_wipe_title: "Clear all data?", confirm_wipe_msg: "This action cannot be undone. Do you want to backup first?", btn_wipe_backup: "Backup & Delete", btn_wipe_direct: "Delete without backup"
-  },
-  es: {
-    header_subtitle: "Tus enlaces", tab_shortcuts: "Accesos", tab_add: "Nuevo", tab_data: "Datos",
-    form_new: "Nuevo Acceso", form_edit: "Editar", placeholder_keyword: "Palabra clave", placeholder_url: "URL destino",
-    btn_cancel: "Cancelar", btn_add: "Añadir", btn_update: "Modificar", btn_export: "Exportar", btn_import: "Importar JSON", btn_wipe: "Borrar todo",
-    data_title: "Importar / Exportar", data_desc: "Guarde sus enlaces o restáurelos desde un archivo JSON.",
-    settings_title: "Ajustes", settings_theme: "Tema", settings_lang: "Idioma", theme_dark: "Oscuro", theme_light: "Claro", settings_tooltip: "Ajustes",
-    empty_state: "No hay enlaces libres.<br>Añade uno nuevo.",
-    toast_import_success: "Importado!", toast_import_error: "Formato no válido.", toast_copy: "Copiado", toast_wipe: "Borrados.", toast_delete: "Eliminado.", toast_add: "Guardado.",
-    btn_edit_tooltip: "Editar", btn_del_tooltip: "Borrar", view_list: "Lista", view_grid: "Cuadrícula", sort_asc: "A-Z", sort_desc: "Z-A",
-    confirm_del_title: "¿Borrar?", confirm_del_msg: "¿Eliminar este acceso?", btn_yes: "Borrar", btn_no: "Cancelar",
-    confirm_wipe_title: "¿Borrar datos?", confirm_wipe_msg: "Irreversible. ¿Quiere guardar una copia?", btn_wipe_backup: "Guardar & Borrar", btn_wipe_direct: "Borrar directo"
-  },
-  de: {
-    header_subtitle: "Schnelle Links", tab_shortcuts: "Links", tab_add: "Neu", tab_data: "Daten",
-    form_new: "Neuer Link", form_edit: "Bearbeiten", placeholder_keyword: "Schlüsselwort", placeholder_url: "Ziel-URL",
-    btn_cancel: "Abbrechen", btn_add: "Speichern", btn_update: "Aktualisieren", btn_export: "Exportieren", btn_import: "JSON Import", btn_wipe: "Alles löschen",
-    data_title: "Import / Export", data_desc: "Sichere deine Links.", settings_tooltip: "Einstellungen",
-    settings_title: "Einstellungen", settings_theme: "Design", settings_lang: "Sprache", theme_dark: "Dunkel", theme_light: "Hell",
-    empty_state: "Noch keine Links.<br>Füge einen hinzu!",
-    toast_import_success: "Erfolgreich geladen!", toast_import_error: "Ungültiges Format.", toast_copy: "Kopiert!", toast_wipe: "Gelöscht.", toast_delete: "Link gelöscht.", toast_add: "Link gespeichert.",
-    btn_edit_tooltip: "Bearbeiten", btn_del_tooltip: "Löschen", view_list: "Liste", view_grid: "Gitter", sort_asc: "A-Z", sort_desc: "Z-A",
-    confirm_del_title: "Löschen?", confirm_del_msg: "Wirklich löschen?", btn_yes: "Löschen", btn_no: "Abbrechen",
-    confirm_wipe_title: "Alles löschen?", confirm_wipe_msg: "Dies ist unwiderruflich.", btn_wipe_backup: "Sichern & Löschen", btn_wipe_direct: "Löschen"
-  }
-};
+/* global LC, i18nData */
+// popup.js — dépend de i18n.js (i18nData) et shared.js (LC)
 
 let currentLang = 'fr';
 let currentTheme = 'dark';
-let currentView = 'list'; // list or grid
-let currentSort = 'asc'; // asc, desc, manual
-let customOrder = [];
+let currentView = 'list';  // list | grid
+let currentSort = 'asc';   // asc | desc | manual
+let customOrder = [];      // identifiants normalisés, dans l'ordre manuel
+let currentFilter = '';    // texte de recherche normalisé
+
+const MAX_IMPORT_BYTES = 1024 * 1024; // 1 Mo
+
+// Traduction avec remplacement de {n}
+function t(key, vars) {
+  const dict = i18nData[currentLang] || i18nData.fr;
+  let s = dict[key] !== undefined ? dict[key] : (i18nData.fr[key] || key);
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, v);
+  return s;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const keywordInput = document.getElementById('keyword-input');
-    const urlInput = document.getElementById('url-input');
-    const addBtn = document.getElementById('add-btn');
-    const cancelEditBtn = document.getElementById('cancel-edit-btn');
-    const listContainer = document.getElementById('shortcuts-list');
-    const formTitle = document.getElementById('form-title');
-    
-    const exportBtn = document.getElementById('export-btn');
-    const importFile = document.getElementById('import-file');
-    const wipeBtn = document.getElementById('wipe-data-btn');
-    const dragZone = document.getElementById('drag-zone');
-    
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsOverlay = document.getElementById('settings-overlay');
-    const closeSettingsBtn = document.getElementById('close-settings-btn');
-    
-    // Tools
-    const btnViewList = document.getElementById('view-list');
-    const btnViewGrid = document.getElementById('view-grid');
-    const btnSortAsc = document.getElementById('sort-asc');
-    const btnSortDesc = document.getElementById('sort-desc');
+  // DOM
+  const keywordInput = document.getElementById('keyword-input');
+  const urlInput = document.getElementById('url-input');
+  const addBtn = document.getElementById('add-btn');
+  const cancelEditBtn = document.getElementById('cancel-edit-btn');
+  const listContainer = document.getElementById('shortcuts-list');
+  const formTitle = document.getElementById('form-title');
+  const searchInput = document.getElementById('search-input');
 
-    let isEditing = false;
-    let editingOriginalKwd = null;
+  const exportBtn = document.getElementById('export-btn');
+  const importFile = document.getElementById('import-file');
+  const wipeBtn = document.getElementById('wipe-data-btn');
+  const dragZone = document.getElementById('drag-zone');
 
-    // --- INITIALIZATION ---
-    function initPrefs() {
-        chrome.storage.sync.get(['theme', 'lang', 'view', 'sort', 'customOrder'], (res) => {
-            if (res.theme) currentTheme = res.theme;
-            if (res.lang && i18nData[res.lang]) currentLang = res.lang;
-            if (res.view) currentView = res.view;
-            if (res.sort) currentSort = res.sort;
-            if (res.customOrder) customOrder = res.customOrder;
-            
-            // Set Custom Selects
-            updateCustomSelect('theme-custom-select', currentTheme);
-            updateCustomSelect('lang-custom-select', currentLang);
-            
-            applyTheme();
-            applyLanguage();
-            applyViewSettings();
-            loadShortcuts(); 
-        });
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const settingsBtn = document.getElementById('settings-btn');
+  const settingsOverlay = document.getElementById('settings-overlay');
+  const closeSettingsBtn = document.getElementById('close-settings-btn');
+  const confirmOverlay = document.getElementById('confirm-overlay');
+
+  const btnViewList = document.getElementById('view-list');
+  const btnViewGrid = document.getElementById('view-grid');
+  const btnSortAsc = document.getElementById('sort-asc');
+  const btnSortDesc = document.getElementById('sort-desc');
+
+  let isEditing = false;
+  let editingOriginalKwd = null;
+
+  // Exécute une opération de stockage et affiche une erreur claire si elle échoue (quota, etc.)
+  async function guarded(fn) {
+    try { return await fn(); }
+    catch { showToast(t('toast_storage_error'), true); return undefined; }
+  }
+
+  // --- INITIALISATION ---
+  async function initPrefs() {
+    await LC.ready;
+    const res = await chrome.storage.sync.get(['theme', 'lang', 'view', 'sort', 'customOrder', 'fallbackEngine']);
+    if (res.theme === 'dark' || res.theme === 'light') currentTheme = res.theme;
+    if (res.lang && i18nData[res.lang]) currentLang = res.lang;
+    if (res.view === 'list' || res.view === 'grid') currentView = res.view;
+    if (['asc', 'desc', 'manual'].includes(res.sort)) currentSort = res.sort;
+    if (Array.isArray(res.customOrder)) customOrder = res.customOrder.map(LC.normalize);
+
+    updateCustomSelect('theme-custom-select', currentTheme);
+    updateCustomSelect('lang-custom-select', currentLang);
+    updateCustomSelect('engine-custom-select', LC.FALLBACKS[res.fallbackEngine] ? res.fallbackEngine : 'google');
+
+    applyTheme();
+    applyLanguage();
+    applyViewSettings();
+    loadShortcuts();
+  }
+
+  // --- SELECTS PERSONNALISÉS (souris + clavier) ---
+  function updateCustomSelect(id, value) {
+    const sel = document.getElementById(id);
+    sel.setAttribute('data-value', value);
+    let txt = '';
+    sel.querySelectorAll('.select-items div').forEach(opt => {
+      const on = opt.getAttribute('data-value') === value;
+      opt.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) txt = opt.innerHTML;
+    });
+    sel.querySelector('.select-selected span').innerHTML = txt;
+  }
+
+  function setSelectOpen(customSelect, open) {
+    const items = customSelect.querySelector('.select-items');
+    const selected = customSelect.querySelector('.select-selected');
+    const cls = items.classList.contains('select-up') ? 'active-up' : 'active';
+    items.classList.toggle('select-hide', !open);
+    customSelect.classList.toggle(cls, open);
+    if (!open) customSelect.classList.remove('active', 'active-up');
+    selected.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function isSelectOpen(customSelect) {
+    return !customSelect.querySelector('.select-items').classList.contains('select-hide');
+  }
+
+  function closeAllSelects(except) {
+    document.querySelectorAll('.custom-select').forEach(sel => {
+      if (sel !== except) setSelectOpen(sel, false);
+    });
+  }
+
+  function chooseOption(customSelect, opt) {
+    const val = opt.getAttribute('data-value');
+    updateCustomSelect(customSelect.id, val);
+    setSelectOpen(customSelect, false);
+    customSelect.querySelector('.select-selected').focus();
+
+    if (customSelect.id === 'theme-custom-select') {
+      currentTheme = val;
+      guarded(() => chrome.storage.sync.set({ theme: val }));
+      applyTheme();
+    } else if (customSelect.id === 'lang-custom-select') {
+      currentLang = val;
+      guarded(() => chrome.storage.sync.set({ lang: val }));
+      applyLanguage();
+      updateCustomSelect('theme-custom-select', currentTheme);
+      loadShortcuts();
+    } else if (customSelect.id === 'engine-custom-select') {
+      guarded(() => chrome.storage.sync.set({ fallbackEngine: val }));
     }
+  }
 
-    // --- CUSTOM SELECT LOGIC ---
-    function updateCustomSelect(id, value) {
-        const sel = document.getElementById(id);
-        sel.setAttribute('data-value', value);
-        const options = sel.querySelectorAll('.select-items div');
-        let txt = '';
-        options.forEach(opt => {
-            if(opt.getAttribute('data-value') === value) txt = opt.innerHTML;
-        });
-        sel.querySelector('.select-selected span').innerHTML = txt;
-    }
+  document.querySelectorAll('.custom-select').forEach(customSelect => {
+    const selected = customSelect.querySelector('.select-selected');
+    const options = Array.from(customSelect.querySelectorAll('.select-items div'));
 
-    document.querySelectorAll('.custom-select').forEach(customSelect => {
-        const selected = customSelect.querySelector('.select-selected');
-        const items = customSelect.querySelector('.select-items');
-        
-        selected.addEventListener('click', (e) => {
-            e.stopPropagation();
-            closeAllSelects(customSelect);
-            items.classList.toggle('select-hide');
-            
-            if(items.classList.contains('select-up')) {
-                customSelect.classList.toggle('active-up');
-            } else {
-                customSelect.classList.toggle('active');
-            }
-        });
-
-        items.querySelectorAll('div').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const val = opt.getAttribute('data-value');
-                const txt = opt.innerHTML;
-                customSelect.setAttribute('data-value', val);
-                selected.querySelector('span').innerHTML = txt;
-                items.classList.add('select-hide');
-                customSelect.classList.remove('active', 'active-up');
-                
-                // Trigger change action
-                if(customSelect.id === 'theme-custom-select') {
-                    currentTheme = val;
-                    chrome.storage.sync.set({ theme: val });
-                    applyTheme();
-                } else if(customSelect.id === 'lang-custom-select') {
-                    currentLang = val;
-                    chrome.storage.sync.set({ lang: val });
-                    applyLanguage();
-                    // Re-render select texts dynamically
-                    updateCustomSelect('theme-custom-select', currentTheme);
-                    loadShortcuts();
-                }
-            });
-        });
+    selected.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllSelects(customSelect);
+      setSelectOpen(customSelect, !isSelectOpen(customSelect));
     });
 
-    function closeAllSelects(except) {
-        document.querySelectorAll('.custom-select').forEach(sel => {
-            if(sel !== except) {
-                sel.classList.remove('active', 'active-up');
-                sel.querySelector('.select-items').classList.add('select-hide');
-            }
-        });
-    }
-    document.addEventListener('click', () => closeAllSelects(null));
-
-    // --- TOASTS ---
-    function showToast(msg, isError=false) {
-        const container = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = `toast ${isError ? 'error' : ''}`;
-        t.textContent = msg;
-        container.appendChild(t);
-        setTimeout(() => t.remove(), 2800);
-    }
-
-    // --- CONFIRM DIALOG ---
-    function showConfirmDialog(title, message, buttons) {
-        const overlay = document.getElementById('confirm-overlay');
-        document.getElementById('confirm-title').textContent = title;
-        document.getElementById('confirm-message').textContent = message;
-        
-        const actions = document.getElementById('confirm-actions');
-        actions.innerHTML = ''; // clear
-
-        buttons.forEach(b => {
-             const btn = document.createElement('button');
-             btn.className = b.class || 'btn-outline';
-             btn.textContent = b.text;
-             btn.onclick = () => {
-                 overlay.classList.remove('active');
-                 b.action();
-             };
-             actions.appendChild(btn);
-        });
-        overlay.classList.add('active');
-    }
-
-    // --- THEME & LANG ---
-    function applyTheme() {
-        document.body.className = currentTheme + '-theme';
-    }
-
-    function applyLanguage() {
-        const dict = i18nData[currentLang];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            if (dict[el.getAttribute('data-i18n')]) el.innerHTML = dict[el.getAttribute('data-i18n')];
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            if (dict[el.getAttribute('data-i18n-placeholder')]) el.placeholder = dict[el.getAttribute('data-i18n-placeholder')];
-        });
-        document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            if (dict[el.getAttribute('data-i18n-title')]) el.title = dict[el.getAttribute('data-i18n-title')];
-        });
-        if (isEditing) {
-            formTitle.textContent = dict.form_edit; addBtn.textContent = dict.btn_update;
-        } else {
-            formTitle.textContent = dict.form_new; addBtn.textContent = dict.btn_add;
-        }
-    }
-
-    // --- SETTINGS OVERLAY & OUTSIDE CLICKS ---
-    settingsBtn.addEventListener('click', () => settingsOverlay.classList.add('active'));
-    closeSettingsBtn.addEventListener('click', () => settingsOverlay.classList.remove('active'));
-
-    document.querySelectorAll('.overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.remove('active');
-            }
-        });
+    selected.addEventListener('keydown', (e) => {
+      if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        closeAllSelects(customSelect);
+        setSelectOpen(customSelect, true);
+        const cur = options.find(o => o.getAttribute('aria-selected') === 'true') || options[0];
+        cur.focus();
+      }
     });
 
-    // --- TABS ---
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const targetId = btn.getAttribute('data-tab');
-        tabContents.forEach(tc => tc.style.display = tc.id === targetId ? 'flex' : 'none');
-        if (targetId !== 'tab-add' && isEditing) resetForm();
+    options.forEach((opt, i) => {
+      opt.addEventListener('click', (e) => { e.stopPropagation(); chooseOption(customSelect, opt); });
+      opt.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); options[Math.min(i + 1, options.length - 1)].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); options[Math.max(i - 1, 0)].focus(); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); chooseOption(customSelect, opt); }
+        else if (e.key === 'Tab') { setSelectOpen(customSelect, false); }
       });
     });
-    function switchTab(tabId) { tabBtns.forEach(b => { if (b.getAttribute('data-tab') === tabId) b.click(); }); }
-  
-    // --- LIST RENDER & TOOLBAR ---
-    function applyViewSettings() {
-        [btnViewList, btnViewGrid, btnSortAsc, btnSortDesc].forEach(b => b.classList.remove('active'));
-        if (currentView === 'list') { btnViewList.classList.add('active'); listContainer.classList.remove('grid-view'); } 
-        else { btnViewGrid.classList.add('active'); listContainer.classList.add('grid-view'); }
-        if (currentSort === 'asc') btnSortAsc.classList.add('active');
-        else if (currentSort === 'desc') btnSortDesc.classList.add('active');
+  });
+  document.addEventListener('click', () => closeAllSelects(null));
+
+  // --- TOASTS ---
+  function showToast(msg, isError = false) {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${isError ? 'error' : ''}`;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+
+  // --- DIALOGUE DE CONFIRMATION ---
+  function showConfirmDialog(title, message, buttons) {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const actions = document.getElementById('confirm-actions');
+    actions.innerHTML = '';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = b.class || 'btn-outline';
+      btn.textContent = b.text;
+      btn.onclick = () => { confirmOverlay.classList.remove('active'); b.action(); };
+      actions.appendChild(btn);
+    });
+    confirmOverlay.classList.add('active');
+    actions.querySelector('button').focus();
+  }
+
+  // --- THÈME & LANGUE ---
+  function applyTheme() { document.body.className = currentTheme + '-theme'; }
+
+  function applyLanguage() {
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.getAttribute('data-i18n'); if (i18nData[currentLang][k] !== undefined) el.innerHTML = t(k);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const txt = t(el.getAttribute('data-i18n-title'));
+      el.title = txt; el.setAttribute('aria-label', txt);
+    });
+    keywordInput.setAttribute('aria-label', t('placeholder_keyword'));
+    urlInput.setAttribute('aria-label', t('placeholder_url'));
+    searchInput.setAttribute('aria-label', t('search_placeholder'));
+    if (isEditing) { formTitle.textContent = t('form_edit'); addBtn.textContent = t('btn_update'); }
+    else { formTitle.textContent = t('form_new'); addBtn.textContent = t('btn_add'); }
+  }
+
+  // --- RÉGLAGES, OVERLAYS & ÉCHAP ---
+  settingsBtn.addEventListener('click', () => { settingsOverlay.classList.add('active'); closeSettingsBtn.focus(); });
+  closeSettingsBtn.addEventListener('click', () => { settingsOverlay.classList.remove('active'); settingsBtn.focus(); });
+
+  document.querySelectorAll('.overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const open = Array.from(document.querySelectorAll('.custom-select')).find(isSelectOpen);
+    if (open) { setSelectOpen(open, false); open.querySelector('.select-selected').focus(); e.stopPropagation(); return; }
+    if (confirmOverlay.classList.contains('active')) { confirmOverlay.classList.remove('active'); return; }
+    if (settingsOverlay.classList.contains('active')) { settingsOverlay.classList.remove('active'); settingsBtn.focus(); }
+  });
+
+  // --- ONGLETS ---
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+      const targetId = btn.getAttribute('data-tab');
+      tabContents.forEach(tc => tc.style.display = tc.id === targetId ? 'flex' : 'none');
+      if (targetId !== 'tab-add' && isEditing) resetForm();
+    });
+  });
+  tabBtns.forEach(b => b.setAttribute('aria-selected', b.classList.contains('active') ? 'true' : 'false'));
+  function switchTab(tabId) { tabBtns.forEach(b => { if (b.getAttribute('data-tab') === tabId) b.click(); }); }
+
+  // --- LISTE & BARRE D'OUTILS ---
+  function applyViewSettings() {
+    [btnViewList, btnViewGrid, btnSortAsc, btnSortDesc].forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+    const on = (b) => { b.classList.add('active'); b.setAttribute('aria-pressed', 'true'); };
+    if (currentView === 'list') { on(btnViewList); listContainer.classList.remove('grid-view'); }
+    else { on(btnViewGrid); listContainer.classList.add('grid-view'); }
+    if (currentSort === 'asc') on(btnSortAsc);
+    else if (currentSort === 'desc') on(btnSortDesc);
+  }
+
+  [btnViewList, btnViewGrid].forEach(b => b.addEventListener('click', () => {
+    currentView = b.id === 'view-list' ? 'list' : 'grid';
+    guarded(() => chrome.storage.sync.set({ view: currentView }));
+    applyViewSettings();
+  }));
+
+  [btnSortAsc, btnSortDesc].forEach(b => b.addEventListener('click', () => {
+    currentSort = b.id === 'sort-asc' ? 'asc' : 'desc';
+    guarded(() => chrome.storage.sync.set({ sort: currentSort }));
+    applyViewSettings();
+    loadShortcuts();
+  }));
+
+  searchInput.addEventListener('input', () => {
+    currentFilter = LC.normalize(searchInput.value);
+    loadShortcuts();
+  });
+
+  async function loadShortcuts() {
+    await LC.ready;
+    const [list, usage] = await Promise.all([LC.getAll(), LC.getUsage()]);
+    renderList(list, usage);
+  }
+
+  function sortList(list) {
+    if (currentSort === 'manual') {
+      const pos = new Map(customOrder.map((id, i) => [id, i]));
+      return list.sort((a, b) => (pos.has(a.id) ? pos.get(a.id) : 1e9) - (pos.has(b.id) ? pos.get(b.id) : 1e9)
+        || a.k.localeCompare(b.k));
     }
+    return list.sort((a, b) => currentSort === 'asc' ? a.k.localeCompare(b.k) : b.k.localeCompare(a.k));
+  }
 
-    [btnViewList, btnViewGrid].forEach(b => b.addEventListener('click', () => {
-        currentView = b.id === 'view-list' ? 'list' : 'grid';
-        chrome.storage.sync.set({ view: currentView });
-        applyViewSettings();
-    }));
-
-    [btnSortAsc, btnSortDesc].forEach(b => b.addEventListener('click', () => {
-        currentSort = b.id === 'sort-asc' ? 'asc' : 'desc';
-        chrome.storage.sync.set({ sort: currentSort });
-        applyViewSettings();
-        loadShortcuts();
-    }));
-
-    function loadShortcuts() {
-      chrome.storage.sync.get(['shortcuts'], (result) => {
-        renderList(result.shortcuts || {});
-      });
+  function renderList(all, usage) {
+    listContainer.innerHTML = '';
+    if (all.length === 0) {
+      listContainer.innerHTML = `<div class="empty-state">${t('empty_state')}</div>`;
+      return;
     }
-  
-    function renderList(shortcuts) {
-      listContainer.innerHTML = '';
-      let keys = Object.keys(shortcuts);
-      const dict = i18nData[currentLang];
-  
-      if (keys.length === 0) {
-        listContainer.innerHTML = `<div class="empty-state">${dict.empty_state}</div>`;
-        return;
-      }
-      
-      if(currentSort === 'manual' && customOrder) {
-          const missing = keys.filter(k => !customOrder.includes(k));
-          keys = customOrder.filter(k => keys.includes(k)).concat(missing);
-      } else {
-          keys.sort((a,b) => currentSort === 'asc' ? a.localeCompare(b) : b.localeCompare(a));
-      }
+    let list = all;
+    if (currentFilter) list = all.filter(s => s.id.includes(currentFilter) || s.u.toLowerCase().includes(currentFilter));
+    if (list.length === 0) {
+      listContainer.innerHTML = `<div class="empty-state">${t('no_result')}</div>`;
+      return;
+    }
+    sortList(list);
 
-      keys.forEach(key => {
-        const url = shortcuts[key];
-        const item = document.createElement('div');
-        item.className = 'shortcut-item';
-        item.setAttribute('data-kwd', key);
-        
-        item.innerHTML = `
-          <div class="shortcut-info">
-             <span class="shortcut-kwd"></span>
-             <span class="shortcut-url"></span>
-          </div>
-          <div class="actions">
-             <button class="icon-btn edit-b" title="${dict.btn_edit_tooltip}">
-               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-             </button>
-             <button class="icon-btn delete delete-b" title="${dict.btn_del_tooltip}">
-               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-             </button>
-          </div>
-        `;
-        // textContent : évite toute injection HTML via un mot-clé ou une URL importé(e)
-        item.querySelector('.shortcut-kwd').textContent = key;
-        const urlEl = item.querySelector('.shortcut-url');
-        urlEl.textContent = url; urlEl.title = url;
-        item.querySelector('.edit-b').onclick = () => startEdit(key, url);
-        item.querySelector('.delete-b').onclick = () => confirmDeleteShortcut(key);
-        
-        // DRAG & DROP LOGIC
+    list.forEach(({ id, k: key, u: url }) => {
+      const item = document.createElement('div');
+      item.className = 'shortcut-item';
+      item.setAttribute('data-id', id);
+
+      // Gabarit statique : aucune donnée utilisateur dans le HTML (voir textContent plus bas)
+      item.innerHTML = `
+        <div class="shortcut-info">
+           <span class="shortcut-kwd"></span>
+           <span class="shortcut-url"></span>
+        </div>
+        <div class="actions">
+           <button class="icon-btn edit-b">
+             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+           </button>
+           <button class="icon-btn delete delete-b">
+             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+           </button>
+        </div>
+      `;
+      const kwdEl = item.querySelector('.shortcut-kwd');
+      kwdEl.textContent = key;
+      if (usage[id]) {
+        const badge = document.createElement('span');
+        badge.className = 'shortcut-count';
+        badge.textContent = '×' + usage[id];
+        badge.title = t('usage_tooltip');
+        kwdEl.appendChild(badge);
+      }
+      const urlEl = item.querySelector('.shortcut-url');
+      urlEl.textContent = url; urlEl.title = url;
+
+      const editBtn = item.querySelector('.edit-b');
+      editBtn.title = t('btn_edit_tooltip'); editBtn.setAttribute('aria-label', `${t('btn_edit_tooltip')}: ${key}`);
+      editBtn.onclick = () => startEdit(key, url);
+      const delBtn = item.querySelector('.delete-b');
+      delBtn.title = t('btn_del_tooltip'); delBtn.setAttribute('aria-label', `${t('btn_del_tooltip')}: ${key}`);
+      delBtn.onclick = () => confirmDeleteShortcut(id);
+
+      // Glisser-déposer (désactivé pendant une recherche pour ne pas corrompre l'ordre)
+      if (!currentFilter) {
         item.setAttribute('draggable', 'true');
-        item.addEventListener('dragstart', (e) => {
-            e.dataTransfer.effectAllowed = 'move';
-            item.classList.add('dragging');
-        });
+        item.addEventListener('dragstart', (e) => { e.dataTransfer.effectAllowed = 'move'; item.classList.add('dragging'); });
         item.addEventListener('dragend', () => {
-            item.classList.remove('dragging');
-            const newOrder = Array.from(listContainer.querySelectorAll('.shortcut-item')).map(el => el.getAttribute('data-kwd'));
-            chrome.storage.sync.set({ customOrder: newOrder, sort: 'manual' }, () => {
-                currentSort = 'manual'; customOrder = newOrder; applyViewSettings();
-            });
+          item.classList.remove('dragging');
+          const newOrder = Array.from(listContainer.querySelectorAll('.shortcut-item')).map(el => el.getAttribute('data-id'));
+          currentSort = 'manual'; customOrder = newOrder; applyViewSettings();
+          guarded(() => chrome.storage.sync.set({ customOrder: newOrder, sort: 'manual' }));
         });
         item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
-        item.addEventListener('dragenter', function(e) {
-            e.preventDefault();
-            const dragging = listContainer.querySelector('.dragging');
-            if (dragging && dragging !== this) {
-                const children = Array.from(listContainer.children);
-                const dragIndex = children.indexOf(dragging);
-                const targetIndex = children.indexOf(this);
-                if (dragIndex < targetIndex) this.parentNode.insertBefore(dragging, this.nextSibling);
-                else this.parentNode.insertBefore(dragging, this);
-            }
+        item.addEventListener('dragenter', function (e) {
+          e.preventDefault();
+          const dragging = listContainer.querySelector('.dragging');
+          if (dragging && dragging !== this) {
+            const children = Array.from(listContainer.children);
+            if (children.indexOf(dragging) < children.indexOf(this)) this.parentNode.insertBefore(dragging, this.nextSibling);
+            else this.parentNode.insertBefore(dragging, this);
+          }
         });
+      }
 
-        listContainer.appendChild(item);
-      });
-    }
-  
-    // --- FORM LOGIC ---
-    function startEdit(kwd, url) {
-        isEditing = true; editingOriginalKwd = kwd;
-        keywordInput.value = kwd; urlInput.value = url;
-        applyLanguage(); cancelEditBtn.style.display = 'block';
-        switchTab('tab-add'); keywordInput.focus();
-    }
-    function resetForm() {
-        isEditing = false; editingOriginalKwd = null;
-        keywordInput.value = ''; urlInput.value = '';
-        cancelEditBtn.style.display = 'none'; applyLanguage();
-    }
-    function saveShortcut() {
-      let kwd = keywordInput.value.trim(); let url = urlInput.value.trim();
-      if (!kwd || !url) return;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
-      chrome.storage.sync.get(['shortcuts'], (res) => {
-        let shortcuts = res.shortcuts || {};
-        if (isEditing && editingOriginalKwd !== kwd) delete shortcuts[editingOriginalKwd];
-        shortcuts[kwd] = url;
-        chrome.storage.sync.set({ shortcuts }, () => {
-          resetForm(); loadShortcuts(); switchTab('tab-list');
-          showToast(i18nData[currentLang].toast_add);
-        });
-      });
-    }
-    function confirmDeleteShortcut(key) {
-        const dict = i18nData[currentLang];
-        showConfirmDialog(dict.confirm_del_title, dict.confirm_del_msg, [
-            { text: dict.btn_no, class: 'btn-outline', action: () => {} },
-            { text: dict.btn_yes, class: 'btn-danger', action: () => {
-                chrome.storage.sync.get(['shortcuts'], (res) => {
-                    let shortcuts = res.shortcuts || {}; delete shortcuts[key];
-                    chrome.storage.sync.set({ shortcuts }, () => {
-                        loadShortcuts(); showToast(dict.toast_delete);
-                    });
-                });
-            }}
-        ]);
-    }
-  
-    // --- IMPORT/EXPORT/WIPE ---
-    function doExport() {
-      chrome.storage.sync.get(['shortcuts'], (result) => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result.shortcuts || {}, null, 2));
-        const anchor = document.createElement('a'); anchor.href = dataStr; anchor.download = "link_catcher_backup.json"; anchor.click();
-      });
-    }
-    exportBtn.addEventListener('click', doExport);
-
-    function processImportData(jsonString) {
-        const dict = i18nData[currentLang];
-        try {
-            const imported = JSON.parse(jsonString);
-            if (!imported || typeof imported !== 'object' || Array.isArray(imported)) throw new Error("Format");
-            for (const [key, val] of Object.entries(imported)) {
-                if (typeof key !== 'string' || typeof val !== 'string' || (!val.startsWith('http://') && !val.startsWith('https://'))) throw new Error("Invalid");
-            }
-            chrome.storage.sync.get(['shortcuts'], (res) => {
-                const merged = { ...(res.shortcuts || {}), ...imported };
-                chrome.storage.sync.set({ shortcuts: merged }, () => {
-                    showToast(dict.toast_import_success);
-                    loadShortcuts(); switchTab('tab-list');
-                });
-            });
-        } catch (err) { showToast(dict.toast_import_error, true); }
-    }
-
-    importFile.addEventListener('change', (e) => {
-      if (!e.target.files[0]) return;
-      const reader = new FileReader();
-      reader.onload = (event) => { processImportData(event.target.result); importFile.value = ''; };
-      reader.readAsText(e.target.files[0]);
+      listContainer.appendChild(item);
     });
+  }
 
-    dragZone.addEventListener('dragover', (e) => { e.preventDefault(); dragZone.classList.add('dragover'); });
-    dragZone.addEventListener('dragleave', (e) => { e.preventDefault(); dragZone.classList.remove('dragover'); });
-    dragZone.addEventListener('drop', (e) => {
-        e.preventDefault(); dragZone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const file = e.dataTransfer.files[0];
-            if (file.type !== "application/json" && !file.name.endsWith('.json')) { showToast(i18nData[currentLang].toast_import_error, true); return; }
-            const reader = new FileReader();
-            reader.onload = (ev) => processImportData(ev.target.result);
-            reader.readAsText(file);
-        }
+  // --- FORMULAIRE ---
+  function startEdit(kwd, url) {
+    isEditing = true; editingOriginalKwd = kwd;
+    keywordInput.value = kwd; urlInput.value = url;
+    applyLanguage(); cancelEditBtn.style.display = 'block';
+    switchTab('tab-add'); keywordInput.focus();
+  }
+  function resetForm() {
+    isEditing = false; editingOriginalKwd = null;
+    keywordInput.value = ''; urlInput.value = '';
+    cancelEditBtn.style.display = 'none'; applyLanguage();
+  }
+
+  async function saveShortcut() {
+    const url = LC.parseUrl(urlInput.value);
+    // En création, "proj, p" crée deux alias vers la même URL. En édition, le champ est un seul mot.
+    const kws = isEditing ? [keywordInput.value.trim()]
+      : [...new Set(keywordInput.value.split(',').map(s => s.trim()).filter(Boolean))];
+    if (!kws.length || kws.some(k => k.length > LC.MAX_KEYWORD || !LC.normalize(k))) { showToast(t('toast_kwd_invalid'), true); return; }
+    if (!url) { showToast(t('toast_url_invalid'), true); return; }
+
+    const ok = await guarded(async () => {
+      await LC.saveMany(kws.map(k => ({ k, u: url })));
+      if (isEditing && LC.normalize(editingOriginalKwd) !== LC.normalize(kws[0])) {
+        await LC.remove(LC.normalize(editingOriginalKwd)); // supprimé seulement après sauvegarde réussie
+      }
+      return true;
     });
+    if (!ok) return;
+    resetForm(); loadShortcuts(); switchTab('tab-list');
+    showToast(t('toast_add'));
+  }
 
-    wipeBtn.addEventListener('click', () => {
-        const dict = i18nData[currentLang];
-        showConfirmDialog(dict.confirm_wipe_title, dict.confirm_wipe_msg, [
-            { text: dict.btn_cancel, class: 'btn-outline', action: () => {} },
-            { text: dict.btn_wipe_backup, class: 'btn-outline', action: () => {
-                doExport();
-                chrome.storage.sync.set({ shortcuts: {} }, () => { loadShortcuts(); showToast(dict.toast_wipe); });
-            }},
-            { text: dict.btn_wipe_direct, class: 'btn-danger', action: () => {
-                chrome.storage.sync.set({ shortcuts: {} }, () => { loadShortcuts(); showToast(dict.toast_wipe); });
-            }}
-        ]);
-    });
+  function confirmDeleteShortcut(id) {
+    showConfirmDialog(t('confirm_del_title'), t('confirm_del_msg'), [
+      { text: t('btn_no'), class: 'btn-outline', action: () => {} },
+      { text: t('btn_yes'), class: 'btn-danger', action: async () => {
+        if (await guarded(async () => { await LC.remove(id); return true; })) { loadShortcuts(); showToast(t('toast_delete')); }
+      } }
+    ]);
+  }
 
-    // --- BINDINGS ---
-    addBtn.addEventListener('click', saveShortcut);
-    cancelEditBtn.addEventListener('click', () => { resetForm(); switchTab('tab-list'); });
-    keywordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') urlInput.focus(); });
-    urlInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveShortcut(); });
+  // --- IMPORT / EXPORT / EFFACEMENT ---
+  async function doExport() {
+    const list = await LC.getAll();
+    const obj = {};
+    list.sort((a, b) => a.k.localeCompare(b.k)).forEach(s => { obj[s.k] = s.u; }); // format simple { mot: url }
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = href; a.download = 'link_catcher_backup.json'; a.click();
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+  }
+  exportBtn.addEventListener('click', doExport);
 
-    initPrefs();
+  async function processImportData(jsonString) {
+    let incoming;
+    try {
+      const imported = JSON.parse(jsonString);
+      if (!imported || typeof imported !== 'object' || Array.isArray(imported)) throw new Error('format');
+      const byId = new Map();
+      for (const [k, v] of Object.entries(imported)) {
+        const key = k.trim(); const url = typeof v === 'string' ? LC.parseUrl(v) : null;
+        if (key && key.length <= LC.MAX_KEYWORD && LC.normalize(key) && url) byId.set(LC.normalize(key), { k: key, u: url });
+      }
+      if (byId.size === 0) throw new Error('empty');
+      incoming = byId;
+    } catch { showToast(t('toast_import_error'), true); return; }
+
+    const existing = new Map((await LC.getAll()).map(s => [s.id, s]));
+    const conflicts = [...incoming].filter(([id, it]) => existing.has(id) && existing.get(id).u !== it.u);
+
+    const run = async (items) => {
+      if (await guarded(async () => { await LC.saveMany(items); return true; })) {
+        showToast(t('toast_import_count', { n: items.length }));
+        loadShortcuts(); switchTab('tab-list');
+      }
+    };
+    const all = [...incoming.values()];
+    if (conflicts.length === 0) { run(all); return; }
+
+    const conflictIds = new Set(conflicts.map(([id]) => id));
+    showConfirmDialog(t('import_conflict_title'), t('import_conflict_msg', { n: conflicts.length }), [
+      { text: t('btn_cancel'), class: 'btn-outline', action: () => {} },
+      { text: t('btn_keep'), class: 'btn-outline', action: () => run([...incoming].filter(([id]) => !conflictIds.has(id)).map(([, it]) => it)) },
+      { text: t('btn_replace'), class: 'btn-danger', action: () => run(all) }
+    ]);
+  }
+
+  function readJsonFile(file) {
+    if (file.size > MAX_IMPORT_BYTES) { showToast(t('toast_import_error'), true); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => processImportData(ev.target.result);
+    reader.readAsText(file);
+  }
+
+  document.getElementById('upload-label').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); importFile.click(); }
+  });
+  importFile.addEventListener('change', (e) => {
+    if (!e.target.files[0]) return;
+    readJsonFile(e.target.files[0]);
+    importFile.value = '';
+  });
+
+  dragZone.addEventListener('dragover', (e) => { e.preventDefault(); dragZone.classList.add('dragover'); });
+  dragZone.addEventListener('dragleave', (e) => { e.preventDefault(); dragZone.classList.remove('dragover'); });
+  dragZone.addEventListener('drop', (e) => {
+    e.preventDefault(); dragZone.classList.remove('dragover');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+    if (file.type !== 'application/json' && !file.name.endsWith('.json')) { showToast(t('toast_import_error'), true); return; }
+    readJsonFile(file);
+  });
+
+  async function wipe() {
+    if (await guarded(async () => { await LC.clear(); return true; })) { loadShortcuts(); showToast(t('toast_wipe')); }
+  }
+  wipeBtn.addEventListener('click', () => {
+    showConfirmDialog(t('confirm_wipe_title'), t('confirm_wipe_msg'), [
+      { text: t('btn_cancel'), class: 'btn-outline', action: () => {} },
+      { text: t('btn_wipe_backup'), class: 'btn-outline', action: async () => { await doExport(); wipe(); } },
+      { text: t('btn_wipe_direct'), class: 'btn-danger', action: wipe }
+    ]);
+  });
+
+  // --- ÉVÉNEMENTS ---
+  addBtn.addEventListener('click', saveShortcut);
+  cancelEditBtn.addEventListener('click', () => { resetForm(); switchTab('tab-list'); });
+  keywordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') urlInput.focus(); });
+  urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveShortcut(); });
+
+  initPrefs();
 });

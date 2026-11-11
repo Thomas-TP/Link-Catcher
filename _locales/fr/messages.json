@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Link Catcher"
+  },
+  "extDescription": {
+    "message": "Tapez un mot-clé dans la barre de recherche et accédez directement à votre lien. Privé, local, sans suivi."
+  },
+  "actionTitle": {
+    "message": "Gérer les raccourcis"
+  }
+}

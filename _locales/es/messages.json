@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Link Catcher"
+  },
+  "extDescription": {
+    "message": "Escribe una palabra clave en la barra de búsqueda y ve directo a tu enlace guardado. Privado, local, sin seguimiento."
+  },
+  "actionTitle": {
+    "message": "Gestionar accesos"
+  }
+}

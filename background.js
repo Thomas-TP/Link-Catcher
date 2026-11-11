@@ -1,75 +1,50 @@
-// background.js
+/* global LC */
+// background.js (service worker)
+importScripts('shared.js');
 
-// Moteurs de recherche supportés : domaine, chemin attendu, paramètre de requête.
-// Le domaine est comparé strictement (exact ou sous-domaine) pour éviter les faux positifs
-// du type "evilgoogle.com" ou "google.evil.com".
-const ENGINES = [
-  { host: /(^|\.)google\.[a-z.]+$/, path: '/search', param: 'q' },
-  { host: /(^|\.)bing\.com$/, path: '/search', param: 'q' },
-  { host: /(^|\.)duckduckgo\.com$/, path: null, param: 'q' },
-  { host: /(^|\.)search\.yahoo\.com$/, path: '/search', param: 'p' },
-  { host: /(^|\.)ecosia\.org$/, path: '/search', param: 'q' }
-];
-
-// Filtre côté navigateur : le listener n'est appelé que pour ces moteurs.
-const NAV_FILTER = {
-  url: [
-    { hostContains: 'google.', pathPrefix: '/search' },
-    { hostSuffix: 'bing.com', pathPrefix: '/search' },
-    { hostSuffix: 'duckduckgo.com' },
-    { hostSuffix: 'search.yahoo.com', pathPrefix: '/search' },
-    { hostSuffix: 'ecosia.org', pathPrefix: '/search' }
-  ]
-};
-
-// Extrait la requête de recherche selon le moteur
-function extractQuery(urlStr) {
-  try {
-    const url = new URL(urlStr);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
-    for (const e of ENGINES) {
-      if (e.host.test(url.hostname) && (!e.path || url.pathname.startsWith(e.path))) {
-        return url.searchParams.get(e.param);
-      }
-    }
-  } catch (err) {
-    // URL invalide
-  }
-  return null;
+// Ouvre une URL selon la façon dont l'utilisateur a validé dans l'omnibox.
+function openUrl(url, disposition) {
+  if (disposition === 'newForegroundTab') chrome.tabs.create({ url });
+  else if (disposition === 'newBackgroundTab') chrome.tabs.create({ url, active: false });
+  else chrome.tabs.update({ url });
 }
 
-// Retourne l'URL associée au mot exact (ou null). Hors prototype : "constructor" n'est pas un raccourci.
-function lookup(shortcuts, word) {
-  return Object.prototype.hasOwnProperty.call(shortcuts, word) && typeof shortcuts[word] === 'string'
-    ? shortcuts[word]
-    : null;
-}
-
-// 1. Interception d'une vraie recherche (Google, Bing, etc.)
-chrome.webNavigation.onBeforeNavigate.addListener((details) => {
-  // Navigation principale uniquement (pas les iframes)
-  if (details.frameId !== 0) return;
-
-  const query = extractQuery(details.url);
+// 1. Interception d'une vraie recherche (Google, Bing, DuckDuckGo, ...)
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  if (details.frameId !== 0) return; // navigation principale uniquement
+  const query = LC.extractQuery(details.url);
   if (!query) return;
-
-  const exactWord = query.trim();
-  chrome.storage.sync.get(['shortcuts'], (result) => {
-    const target = lookup(result.shortcuts || {}, exactWord);
-    if (target) chrome.tabs.update(details.tabId, { url: target });
-  });
-}, NAV_FILTER);
+  try {
+    const hit = await LC.find(query);
+    if (hit) {
+      chrome.tabs.update(details.tabId, { url: hit.url });
+      LC.bumpUsage(hit.id);
+    }
+  } catch { /* onglet fermé ou stockage indisponible */ }
+}, LC.NAV_FILTER);
 
 // 2. Omnibox : "l" + Espace + mot-clé
-chrome.omnibox.onInputEntered.addListener((text) => {
-  const exactWord = text.trim();
-  chrome.storage.sync.get(['shortcuts'], (result) => {
-    const target = lookup(result.shortcuts || {}, exactWord);
-    if (target) {
-      chrome.tabs.update({ url: target });
-    } else {
-      // Mot inconnu : recherche normale
-      chrome.tabs.update({ url: `https://www.google.com/search?q=${encodeURIComponent(text)}` });
-    }
-  });
+const escapeXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  const q = LC.normalize(text);
+  if (!q) return;
+  const list = await LC.getAll();
+  const matches = list
+    .filter(s => s.id.includes(q) || s.u.toLowerCase().includes(q))
+    .sort((a, b) => (a.id.startsWith(q) ? 0 : 1) - (b.id.startsWith(q) ? 0 : 1) || a.id.localeCompare(b.id))
+    .slice(0, 5)
+    .map(s => ({ content: s.k, description: `<match>${escapeXml(s.k)}</match> <dim>${escapeXml(s.u)}</dim>` }));
+  suggest(matches);
+});
+
+chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
+  const hit = await LC.find(text);
+  if (hit) {
+    openUrl(hit.url, disposition);
+    LC.bumpUsage(hit.id);
+  } else {
+    openUrl(await LC.fallbackUrl(text), disposition); // mot inconnu : recherche normale
+  }
 });
