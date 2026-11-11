@@ -1,10 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Link Catcher",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Quickly open your saved links by typing exact keywords in the search bar.",
-  "permissions": ["storage", "webNavigation"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "storage",
+    "webNavigation"
+  ],
   "background": {
     "service_worker": "background.js"
   },

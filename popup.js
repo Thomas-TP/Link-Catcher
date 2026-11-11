@@ -5,7 +5,7 @@ const i18nData = {
   fr: {
     header_subtitle: "Vos liens instantanés", tab_shortcuts: "Mes raccourcis", tab_add: "Nouveau", tab_data: "Données",
     form_new: "Nouveau Raccourci", form_edit: "Modifier Raccourci", placeholder_keyword: "Mot précis (ex: proj)", placeholder_url: "URL associée (https://...)",
-    btn_cancel: "Annuler", btn_add: "Ajouter", btn_update: "Mettre à", btn_export: "Exporter", btn_import: "Importer JSON", btn_wipe: "Supprimer tout",
+    btn_cancel: "Annuler", btn_add: "Ajouter", btn_update: "Mettre à jour", btn_export: "Exporter", btn_import: "Importer JSON", btn_wipe: "Supprimer tout",
     data_title: "Import / Export", data_desc: "Sauvegardez vos liens ou restaurez-les depuis un fichier JSON.",
     settings_title: "Paramètres", settings_theme: "Thème", settings_lang: "Langue", theme_dark: "Sombre", theme_light: "Clair", settings_tooltip: "Paramètres",
     empty_state: "Aucun lien enregistré.<br>Allez dans \"Nouveau\" pour commencer !",
@@ -304,8 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         item.innerHTML = `
           <div class="shortcut-info">
-             <span class="shortcut-kwd">${key}</span>
-             <span class="shortcut-url" title="${url}">${url}</span>
+             <span class="shortcut-kwd"></span>
+             <span class="shortcut-url"></span>
           </div>
           <div class="actions">
              <button class="icon-btn edit-b" title="${dict.btn_edit_tooltip}">
@@ -316,6 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
              </button>
           </div>
         `;
+        // textContent : évite toute injection HTML via un mot-clé ou une URL importé(e)
+        item.querySelector('.shortcut-kwd').textContent = key;
+        const urlEl = item.querySelector('.shortcut-url');
+        urlEl.textContent = url; urlEl.title = url;
         item.querySelector('.edit-b').onclick = () => startEdit(key, url);
         item.querySelector('.delete-b').onclick = () => confirmDeleteShortcut(key);
         

@@ -6,7 +6,7 @@
 
 ## 📖 À Propos
 
-**Link Catcher** est une extension Google Chrome moderne et légère qui vous permet d'associer des mots-clés spécifiques à vos URL personnalisées. Lorsque vous tapez ces mots-clés dans la barre de recherche de votre navigateur (Google, Bing, Yahoo, DuckDuckGo, Ecosia), l'extension intercepte instantanément la requête et vous redirige vers la page souhaitée avant même le chargement des résultats.
+**Link Catcher** est une extension moderne pour Chrome et Edge et légère qui vous permet d'associer des mots-clés spécifiques à vos URL personnalisées. Lorsque vous tapez ces mots-clés dans la barre de recherche de votre navigateur (Google, Bing, Yahoo, DuckDuckGo, Ecosia), l'extension intercepte instantanément la requête et vous redirige vers la page souhaitée avant même le chargement des résultats.
 
 Dites adieu aux favoris interminables pour vos sites du quotidien !
 
