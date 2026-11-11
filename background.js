@@ -1,70 +1,50 @@
-// background.js
+/* global LC */
+// background.js (service worker)
+importScripts('shared.js');
 
-// Fonction utilitaire pour extraire la requête de recherche selon le moteur de recherche
-function extractQuery(urlStr) {
-  try {
-    const url = new URL(urlStr);
-    
-    // Google
-    if (url.hostname.includes('google.') && url.pathname.includes('/search')) {
-      return url.searchParams.get('q');
-    }
-    // Bing
-    if (url.hostname.includes('bing.com') && url.pathname.includes('/search')) {
-      return url.searchParams.get('q');
-    }
-    // DuckDuckGo
-    if (url.hostname.includes('duckduckgo.com')) {
-      return url.searchParams.get('q');
-    }
-    // Yahoo
-    if (url.hostname.includes('search.yahoo.com') && url.pathname.includes('/search')) {
-      return url.searchParams.get('p');
-    }
-    // Ecosia
-    if (url.hostname.includes('ecosia.org') && url.pathname.includes('/search')) {
-      return url.searchParams.get('q');
-    }
-  } catch(e) {
-    // URL invalide (ça peut arriver avec Chrome interne)
-  }
-  return null;
+// Ouvre une URL selon la façon dont l'utilisateur a validé dans l'omnibox.
+function openUrl(url, disposition) {
+  if (disposition === 'newForegroundTab') chrome.tabs.create({ url });
+  else if (disposition === 'newBackgroundTab') chrome.tabs.create({ url, active: false });
+  else chrome.tabs.update({ url });
 }
 
-// 1. Interception de la navigation web (quand la personne fait une vraie recherche Google, Bing, etc.)
-chrome.webNavigation.onBeforeNavigate.addListener((details) => {
-  // On ne traite que la navigation principale (pas les iframes cachées)
-  if (details.frameId !== 0) return;
+// 1. Interception d'une vraie recherche (Google, Bing, DuckDuckGo, ...)
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  if (details.frameId !== 0) return; // navigation principale uniquement
+  const query = LC.extractQuery(details.url);
+  if (!query) return;
+  try {
+    const hit = await LC.find(query);
+    if (hit) {
+      chrome.tabs.update(details.tabId, { url: hit.url });
+      LC.bumpUsage(hit.id);
+    }
+  } catch { /* onglet fermé ou stockage indisponible */ }
+}, LC.NAV_FILTER);
 
-  const query = extractQuery(details.url);
-  
-  if (query) {
-    const exactWord = query.trim();
-    
-    // On cherche le mot exactement dans notre stockage
-    chrome.storage.sync.get(['shortcuts'], (result) => {
-      const shortcuts = result.shortcuts || {};
-      
-      if (shortcuts[exactWord]) {
-        // Match parfait ! On redirige l'onglet immédiatement vers l'URL
-        chrome.tabs.update(details.tabId, { url: shortcuts[exactWord] });
-      }
-    });
-  }
+// 2. Omnibox : "l" + Espace + mot-clé
+const escapeXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  const q = LC.normalize(text);
+  if (!q) return;
+  const list = await LC.getAll();
+  const matches = list
+    .filter(s => s.id.includes(q) || s.u.toLowerCase().includes(q))
+    .sort((a, b) => (a.id.startsWith(q) ? 0 : 1) - (b.id.startsWith(q) ? 0 : 1) || a.id.localeCompare(b.id))
+    .slice(0, 5)
+    .map(s => ({ content: s.k, description: `<match>${escapeXml(s.k)}</match> <dim>${escapeXml(s.u)}</dim>` }));
+  suggest(matches);
 });
 
-// 2. Interception via Omnibox (si l'utilisateur tape "l" + Espace + le mot clé)
-// C'est un bonus pratique
-chrome.omnibox.onInputEntered.addListener((text) => {
-  const exactWord = text.trim();
-  chrome.storage.sync.get(['shortcuts'], (result) => {
-    const shortcuts = result.shortcuts || {};
-    
-    if (shortcuts[exactWord]) {
-      chrome.tabs.update({url: shortcuts[exactWord]});
-    } else {
-      // Si le mot est inconnu, on fait une recherche Google normale
-      chrome.tabs.update({url: `https://www.google.com/search?q=${encodeURIComponent(text)}`});
-    }
-  });
+chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
+  const hit = await LC.find(text);
+  if (hit) {
+    openUrl(hit.url, disposition);
+    LC.bumpUsage(hit.id);
+  } else {
+    openUrl(await LC.fallbackUrl(text), disposition); // mot inconnu : recherche normale
+  }
 });

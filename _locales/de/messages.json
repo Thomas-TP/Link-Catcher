@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Link Catcher"
+  },
+  "extDescription": {
+    "message": "Gib ein Schlüsselwort in die Suchleiste ein und springe direkt zu deinem gespeicherten Link. Privat, lokal, ohne Tracking."
+  },
+  "actionTitle": {
+    "message": "Links verwalten"
+  }
+}

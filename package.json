@@ -1,0 +1,18 @@
+{
+  "name": "link-catcher",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Link Catcher — outils de développement (lint, tests, build). L'extension elle-même n'a aucune dépendance.",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node tests/e2e.js",
+    "build": "node scripts/build.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "playwright": "^1.65.0"
+  }
+}

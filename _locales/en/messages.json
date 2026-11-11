@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Link Catcher"
+  },
+  "extDescription": {
+    "message": "Type a keyword in your search bar and jump straight to your saved link. Private, local, no tracking."
+  },
+  "actionTitle": {
+    "message": "Manage shortcuts"
+  }
+}

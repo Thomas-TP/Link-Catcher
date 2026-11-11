@@ -52,7 +52,7 @@ body {
     radial-gradient(circle at 15% -10%, var(--bg-gradient-1) 0%, transparent 25%),
     radial-gradient(circle at 85% 15%, var(--bg-gradient-2) 0%, transparent 25%);
   color: var(--text-main);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: system-ui, 'Segoe UI', -apple-system, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -246,3 +246,20 @@ button:active, .upload-label:active { transform: translateY(0); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .empty-state { text-align: center; font-size: 14px; color: var(--text-muted); padding: 30px 20px; background: rgba(128,128,128,0.02); border: 1px dashed var(--glass-border); border-radius: 12px; line-height: 1.5;}
+
+/* SEARCH FIELD */
+.search-input { width: 100%; box-sizing: border-box; margin-bottom: 12px; padding: 10px 12px; font-size: 13px;
+  background: var(--input-bg); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 10px; outline: none; }
+.search-input:focus { border-color: var(--accent-color); background: var(--input-bg-focus); }
+
+/* USAGE BADGE */
+.shortcut-count { margin-left: 8px; font-size: 11px; font-weight: 600; color: var(--text-muted);
+  background: rgba(128,128,128,0.15); border-radius: 8px; padding: 1px 6px; vertical-align: middle; }
+
+/* ACCESSIBILITÉ : focus clavier visible */
+button:focus-visible, .tab-btn:focus-visible, .select-selected:focus-visible, .select-items div:focus-visible,
+.search-input:focus-visible, input:focus-visible, label.upload-label:focus-visible {
+  outline: 2px solid var(--accent-color); outline-offset: 2px;
+}
+.select-items div[aria-selected="true"] { color: var(--accent-color); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
