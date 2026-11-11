@@ -54,13 +54,29 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: package
-      - name: Upload + publish (Chrome Web Store)
+      - name: Upload + publish (Chrome Web Store API v2)
         env:
+          PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
           EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-        run: npx --yes chrome-webstore-upload-cli@3 upload --source "$(ls *.zip)" --auto-publish
+        run: |
+          set -euo pipefail
+          TOKEN=$(curl -fsS https://oauth2.googleapis.com/token \
+            -d client_id="$CLIENT_ID" -d client_secret="$CLIENT_SECRET" \
+            -d refresh_token="$REFRESH_TOKEN" -d grant_type=refresh_token \
+            | node -pe 'JSON.parse(require("fs").readFileSync(0,"utf8")).access_token')
+          echo "::add-mask::$TOKEN"
+          ITEM="publishers/$PUBLISHER_ID/items/$EXTENSION_ID"
+          echo "Upload…"
+          curl -fsS -X POST -H "Authorization: Bearer $TOKEN" -T "$(ls *.zip)" \
+            "https://chromewebstore.googleapis.com/upload/v2/$ITEM:upload?uploadType=media"
+          echo; echo "Publication…"
+          curl -fsS -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Length: 0" \
+            "https://chromewebstore.googleapis.com/v2/$ITEM:publish"
+          echo; echo "Statut :"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://chromewebstore.googleapis.com/v2/$ITEM:fetchStatus"
 
   publish-edge:
     if: github.event_name == 'workflow_dispatch' && inputs.publish_edge
@@ -70,19 +86,30 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: package
-      - name: Upload + publish (Edge Add-ons Publish API v1)
+      - name: Upload + publish (Edge Add-ons REST API v1.1)
         env:
           PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
           CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
           API_KEY: ${{ secrets.EDGE_API_KEY }}
         run: |
           set -euo pipefail
-          BASE="https://api.addons.edge.microsoft.com/v1/products/$PRODUCT_ID/submissions"
+          BASE="https://api.addons.microsoftedge.microsoft.com/v1/products/$PRODUCT_ID/submissions"
           H=(-H "Authorization: ApiKey $API_KEY" -H "X-ClientID: $CLIENT_ID")
+          poll() { # $1 = URL de statut ; attend la fin de l'opération
+            for i in $(seq 1 30); do
+              R=$(curl -fsS "${H[@]}" "$1")
+              S=$(printf '%s' "$R" | node -pe 'JSON.parse(require("fs").readFileSync(0,"utf8")).status')
+              echo "statut : $S"
+              [ "$S" = "Succeeded" ] && return 0
+              [ "$S" = "Failed" ] && { echo "$R"; return 1; }
+              sleep 10
+            done
+            return 1
+          }
+          loc() { tr -d '\r' | awk -F': ' 'tolower($1)=="location"{print $2}' | awk -F/ '{print $NF}'; }
           OP=$(curl -fsS -D - -o /dev/null -X POST "${H[@]}" -H "Content-Type: application/zip" \
-               --data-binary @"$(ls *.zip)" "$BASE/draft/package" | tr -d '\r' | awk -F': ' 'tolower($1)=="location"{print $2}')
-          for i in $(seq 1 30); do
-            S=$(curl -fsS "${H[@]}" "$BASE/draft/package/operations/$OP" | node -pe 'JSON.parse(require("fs").readFileSync(0,"utf8")).status')
-            echo "upload: $S"; [ "$S" = "Succeeded" ] && break; [ "$S" = "Failed" ] && exit 1; sleep 10
-          done
-          curl -fsS -X POST "${H[@]}" -H "Content-Type: application/json" -d '{"notes":"Release automatique"}' "$BASE"
+               --data-binary @"$(ls *.zip)" "$BASE/draft/package" | loc)
+          poll "$BASE/draft/package/operations/$OP"
+          OP=$(curl -fsS -D - -o /dev/null -X POST "${H[@]}" -H "Content-Type: application/json" \
+               -d '{"notes":"Release automatique"}' "$BASE" | loc)
+          poll "$BASE/operations/$OP"
