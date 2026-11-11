@@ -15,6 +15,9 @@ Régénération : `node scripts/store-assets.js` (images) et `node scripts/video
 
 > Les APIs des deux stores ne permettent **pas** de modifier la fiche (descriptions, captures, vidéos) : seule l'importation/publication du package est automatisable. La fiche se remplit dans les tableaux de bord.
 
+## Règle anti-spam des descriptions (refus Chrome)
+Google refuse les fiches qui listent des marques/sites « sans valeur ajoutée » ou répètent un même mot plus de 5 fois. Les descriptions de `store-assets/<langue>/listing.md` ne nomment donc **aucun moteur de recherche** et varient le vocabulaire. `node scripts/check-listing.js` (lancé en CI) le vérifie. Ne rajoute pas de liste de moteurs, de langues ou de mots-clés dans la fiche, la vidéo ou les captures.
+
 ## Chrome Web Store — onglet « Fiche Play Store »
 1. **Langue d'édition actuelle** : commence par `anglais (par défaut)`. Colle la description de `en/listing.md`.
 2. **Éléments graphiques internationaux** (utilisés quand aucune version localisée n'existe) : `en/screenshots/1-5.png`, vidéo YouTube anglaise.
@@ -44,7 +47,7 @@ Le nom et la description courte viennent du manifeste (`_locales`) et sont en le
 
 **Justification des permissions**
 - **storage** : enregistre les raccourcis (mot-clé → URL) et les préférences de l'utilisateur dans le stockage du navigateur. Rien n'est envoyé à un serveur.
-- **webNavigation** : détecte, localement, qu'une navigation principale est une recherche sur un moteur supporté (Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, Startpage, Qwant, Kagi) afin de la comparer aux mots-clés de l'utilisateur et de rediriger l'onglet. Le listener est filtré sur ces seuls domaines ; aucun historique n'est enregistré.
+- **webNavigation** : détecte, localement, qu'une navigation principale est une recherche sur l'un des moteurs de recherche supportés afin de la comparer aux mots-clés de l'utilisateur et de rediriger l'onglet. Le listener est filtré sur ces seuls domaines ; aucun historique n'est enregistré.
 - Aucune permission d'hôte (`host_permissions`), aucun accès au contenu des pages, aucun code distant.
 
 **Code distant :** non. **Données collectées :** aucune (ne rien cocher, cocher les trois certifications).

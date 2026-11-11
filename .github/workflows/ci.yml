@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run check:listing
       - name: Valider manifest.json et les traductions
         run: |
           node -e "const m=require('./manifest.json');if(m.manifest_version!==3)process.exit(1);if(m.host_permissions)throw new Error('host_permissions inattendu');console.log('manifest ok', m.version)"

@@ -8,41 +8,40 @@ Link Catcher
 ## Description courte (manifeste ; ≤ 132 caractères — 100)
 Type a keyword in your search bar and jump straight to your saved link. Private, local, no tracking.
 
-## Description détaillée (1652 caractères)
-Link Catcher turns your search bar into a launcher for the sites you visit every day.
+## Description détaillée (1410 caractères)
+Link Catcher is a fast, private launcher for the pages you open every day.
 
-Save a keyword and a URL (for example "gh" → github.com). Then type that keyword in Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, Startpage, Qwant or Kagi — or type "l" + Space + keyword in the address bar — and you are taken straight to your page before the results even load.
+Pair a short word with a web address, for example "gh" for your code repository. Next time, type it in your search bar, or in the address bar after "l" and a space: you land on your page right away, before any results appear.
 
-FEATURES
-• Instant redirection on an exact keyword (case and accent insensitive)
-• Address bar (omnibox) support with live suggestions: type "l", Space, then a few letters
-• Aliases: write "docs, d" to create two keywords for the same link
-• Search, sort (A-Z / Z-A), list or grid view, drag & drop manual ordering
-• Import / export JSON backups, with conflict handling (keep yours or replace)
-• Light and dark themes; English, Français, Español, Deutsch
-• Keyboard shortcut Alt+Shift+L to open the manager
-• Choose the search engine used when a keyword is unknown
-• Local usage counter on each shortcut (never synced)
+WHAT YOU CAN DO
+• Open a saved page with one exact word, whatever the capitalisation or accents
+• Get live suggestions in the address bar as you type
+• Give one page several names at once, such as "docs, d"
+• Find, sort and reorder your list, in list or grid view
+• Back up and restore everything as a JSON file, with a choice when two names collide
+• Pick a light or dark look and one of four interface languages
+• Open the manager with Alt+Shift+L
+• Choose where unknown words are looked up
 
-PRIVACY FIRST
-No account, no analytics, no tracking, no remote code, no external fonts or resources. Your shortcuts stay in your browser (synced by your browser only if you enable browser sync). The extension needs only two permissions: "storage" to save your shortcuts and "webNavigation" to detect a search on a supported engine, locally. It requests no access to the content of your pages.
+PRIVATE BY DESIGN
+No account, no analytics, no tracking and no remote code. Everything stays in your browser, and is synced by the browser itself only if you turned sync on. Link Catcher asks for two permissions only: "storage", to save your list, and "webNavigation", to notice a web search locally so it can redirect you. It never reads the content of the pages you visit.
 
-HOW TO USE
-1. Click the Link Catcher icon (or press Alt+Shift+L) and open the "Add New" tab.
-2. Enter a keyword (for example gh) and a URL (for example github.com).
-3. Search for exactly that keyword in your search engine, or type l + Space + keyword in the address bar.
+GETTING STARTED
+1. Click the Link Catcher icon and open the "Add New" tab.
+2. Enter a short name (for example gh) and an address (for example github.com).
+3. Search for exactly that word, or type l + Space + the word in the address bar.
 
 ## Termes de recherche (Edge : ≤ 7 termes, 30 car. chacun, 21 mots au total)
 shortcuts, bookmarks, keywords, quick links, omnibox, launcher, redirect
 
 ## Vidéo YouTube (à téléverser, puis coller l'URL dans la langue correspondante)
-**Titre :** Link Catcher — jump to your links with one keyword (Chrome & Edge)
+**Titre :** Link Catcher — your pages one word away
 
 **Description :**
-Link Catcher turns your search bar into a launcher: type a keyword in Google, Bing, DuckDuckGo and more (or l + Space + keyword in the address bar) and land directly on your saved link.
+Link Catcher is a fast, private launcher: type a short word in your search bar or address bar and land straight on your saved page.
 
-Free, private, no account, no tracking.
-Source code & privacy policy: https://github.com/Thomas-TP/Link-Catcher
+Free, no account, no tracking.
+Source code and privacy policy: https://github.com/Thomas-TP/Link-Catcher
 
 **Étiquettes :** link catcher, browser extension, chrome extension, edge extension, shortcuts, bookmarks, omnibox, productivity
 

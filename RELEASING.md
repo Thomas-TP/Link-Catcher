@@ -24,5 +24,8 @@ Le workflow *Release* (déclenchement manuel, cases « publish_chrome » / « pu
 Ne colle jamais ces valeurs dans une conversation, une issue ou un fichier du dépôt.
 Ces deux jobs n'ont pas pu être exécutés sans identifiants : essaie-les d'abord sur une version de test.
 
+## Contrôle des fiches
+`node scripts/check-listing.js` vérifie les descriptions (pas de marques, aucun mot répété plus de 5 fois), conformément à la politique du Chrome Web Store.
+
 ## Visuels et vidéos
 `npm run assets` régénère captures et tuiles (4 langues) ; `npm run video` régénère les vidéos (`ffmpeg` requis pour le .mp4). Voir `STORE_LISTING.md`.
